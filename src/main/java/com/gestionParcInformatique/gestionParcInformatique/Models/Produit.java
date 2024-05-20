@@ -87,4 +87,12 @@ public class Produit {
 
         return data;
     }
+
+    public long getMarqueID() {
+        return this.getMarque().getIdMarque();
+    }
+
+    public long getCatrgorieID() {
+        return this.getCategorie().getIdCategorie();
+    }
 }

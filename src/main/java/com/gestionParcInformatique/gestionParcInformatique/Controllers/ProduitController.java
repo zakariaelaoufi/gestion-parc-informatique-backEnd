@@ -17,7 +17,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +24,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/produits")
 public class ProduitController {
-
-    private final String defaultImage = "default.jpg";
 
     @Autowired
     private ProduitService ProduitService;
@@ -43,31 +40,6 @@ public class ProduitController {
         return new ResponseEntity<>(Produits, HttpStatus.OK);
     }
 
-//    @GetMapping("/test/{idProduit}")
-//    public ResponseEntity<ProduitResp> getProduit(@PathVariable("idProduit") long idProduit) throws IOException {
-//        System.out.println("ddd");
-//        System.out.println("hi");
-//        Produit produit = ProduitService.getProduitById(idProduit);
-//        System.out.println(produit.getNomProduit());
-//        System.out.println(produit.getImageURL());
-//        if (produit.getNomProduit() == null) {
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//        Path imagePath = fileStorageService.getFileStorageLocation(produit.getImageURL());
-//        UrlResource resource = new UrlResource(imagePath.toUri());
-//        System.out.println(resource);
-//        if (!resource.exists()) {
-//            System.out.println("fff");
-//            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-//        }
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        ProduitResp response = new ProduitResp(produit, resource);
-//        return ResponseEntity.ok()
-//                .headers(headers)
-//                .body(response);
-//    }
-
     @GetMapping("/{idProduit}")
     public ResponseEntity<Produit> getProduitById(@PathVariable("idProduit") long idProduit) {
         Produit Produit = ProduitService.getProduitById(idProduit);
@@ -75,20 +47,19 @@ public class ProduitController {
     }
 
 //    @PostMapping("/upload/image")
-    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
-        String imageURL;
-        if (file.isEmpty() || file.getOriginalFilename() == null || file.getOriginalFilename().trim().isEmpty()) {
-            imageURL = defaultImage;
-        } else {
-            imageURL = fileStorageService.storeFile(file);
-        }
-        System.out.println(imageURL);
-        return new ResponseEntity<>(imageURL, HttpStatus.OK);
-    }
+//    public ResponseEntity<String> uploadImage(@RequestParam("file") MultipartFile file) {
+//        String imageURL;
+//        if (file.isEmpty() || file.getOriginalFilename() == null || file.getOriginalFilename().trim().isEmpty()) {
+//            imageURL = defaultImage;
+//        } else {
+//            imageURL = fileStorageService.storeFile(file);
+//        }
+//        System.out.println(imageURL);
+//        return new ResponseEntity<>(imageURL, HttpStatus.OK);
+//    }
 
     @GetMapping("/image/{imageURL}")
     public ResponseEntity<Resource> getImage(@PathVariable("imageURL") String imageURL) throws IOException  {
-        System.out.println("hi");
         Path imagePath = fileStorageService.getFileStorageLocation(imageURL);
 
         UrlResource resource = new UrlResource(imagePath.toUri());
@@ -109,20 +80,12 @@ public class ProduitController {
         if (data.isEmpty()) return null;
         ProduitRequest produitRequest = jacksonObjectMapper.readValue(data, ProduitRequest.class);
 
-        String imageURL;
-        if (file.isEmpty() || file.getOriginalFilename() == null || file.getOriginalFilename().trim().isEmpty()) {
-            imageURL = defaultImage;
-        } else {
-            imageURL = fileStorageService.storeFile(file);
-        }
-
         Produit produit = produitRequest.getProduit();
         produit.setFournisseur(produitRequest.getFournisseur());
         produit.setMarque( produitRequest.getMarque());
         produit.setCategorie(produitRequest.getCategorie());
-        produit.setImageURL(imageURL);
 
-        Produit newProduit = ProduitService.addProduit(produit);
+        Produit newProduit = ProduitService.addProduit(produit,file);
         int quantite = produitRequest.getQuantite();
         List<Inventaire> inventaires = new ArrayList<>(quantite);
         for (int i=0;i<quantite;i++) {
@@ -137,8 +100,15 @@ public class ProduitController {
     }
 
     @PutMapping("/{idProduit}")
-    public ResponseEntity<Produit> updateProduit(@PathVariable("idProduit") long idProduit, @RequestBody Produit Produit) {
-        Produit updatedProduit = ProduitService.updateProduit(idProduit, Produit);
+    public ResponseEntity<Produit> updateProduit(@PathVariable("idProduit") long idProduit, @RequestParam("data") String data, @RequestParam("file") MultipartFile file) throws IOException{
+        System.out.println(data);
+        System.out.println(file.getOriginalFilename());
+        ProduitRequest produitRequest = jacksonObjectMapper.readValue(data, ProduitRequest.class);
+        Produit produit = produitRequest.getProduit();
+        produit.setFournisseur(produitRequest.getFournisseur());
+        produit.setMarque( produitRequest.getMarque());
+        produit.setCategorie(produitRequest.getCategorie());
+        Produit updatedProduit = ProduitService.updateProduit(idProduit, produit, file);
         return new ResponseEntity<>(updatedProduit, HttpStatus.OK);
     }
 
