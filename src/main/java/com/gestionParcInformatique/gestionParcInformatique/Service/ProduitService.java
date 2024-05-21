@@ -47,7 +47,7 @@ public class ProduitService {
         if (ProduitRepository.existsById(idProduit)) {
             Optional<Produit> existingProduit = ProduitRepository.findById(idProduit);
             String originalFilename = file.getOriginalFilename();
-            if (produit.getImageURL().equals(originalFilename)) {
+             if (produit.getImageURL().equals(originalFilename)) {
                 produit.setIdProduit(idProduit);
                 return ProduitRepository.save(produit);
             }

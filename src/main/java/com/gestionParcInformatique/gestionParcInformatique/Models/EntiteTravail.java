@@ -33,4 +33,6 @@ public class EntiteTravail {
     @OneToMany(mappedBy = "entiteTravail")
     private List<Travailler> travaillerList;
 
+    @OneToMany(mappedBy = "entiteTravail")
+    private List<Attacher> attacherList;
 }

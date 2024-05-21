@@ -37,7 +37,8 @@ public class Inventaire {
     private Produit produit;
     @OneToMany(mappedBy = "inventaire")
     private List<Affecter> affecters;
-
+    @OneToMany(mappedBy = "inventaire")
+    private List<Attacher> attachers;
 
 
     @PostPersist
