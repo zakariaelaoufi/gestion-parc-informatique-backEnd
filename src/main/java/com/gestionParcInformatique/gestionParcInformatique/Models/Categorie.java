@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -14,6 +15,8 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@SQLDelete(sql = "UPDATE categorie SET deleted = true WHERE id_categorie=?")
+
 public class Categorie {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -22,6 +25,7 @@ public class Categorie {
     private String libelle;
     @Column(unique=true, nullable=false)
     private String abv;
+    private boolean deleted = Boolean.FALSE;
     private LocalDate dateCreation;
 
     @PostPersist

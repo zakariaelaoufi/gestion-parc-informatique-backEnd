@@ -18,6 +18,7 @@ public class TravailController {
     @GetMapping
     public ResponseEntity<List<Travailler>> getAllTravaux() {
         List<Travailler> travaux = travaillerService.getAllTravaux();
+        System.out.println("hello");
         return new ResponseEntity<>(travaux, HttpStatus.OK);
     }
 

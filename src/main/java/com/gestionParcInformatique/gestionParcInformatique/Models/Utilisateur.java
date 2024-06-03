@@ -20,7 +20,6 @@ import java.util.List;
         @UniqueConstraint(columnNames = {"email"})
 })
 @SQLDelete(sql = "UPDATE utilisateur SET deleted = true WHERE id_utilisateur=?")
-@Where(clause = "deleted=false")
 public class Utilisateur {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

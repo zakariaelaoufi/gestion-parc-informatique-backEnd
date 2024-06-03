@@ -15,6 +15,10 @@ public class InventaireService {
     @Autowired
     private InventaireRepository inventaireRepository;
 
+    public long totalInventaire() {
+        return inventaireRepository.count();
+    }
+
     public List<Inventaire> getAllInventaire() {
         return inventaireRepository.findAll();
     }

@@ -1,6 +1,7 @@
 package com.gestionParcInformatique.gestionParcInformatique.Service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.gestionParcInformatique.gestionParcInformatique.Models.Categorie;
 import com.gestionParcInformatique.gestionParcInformatique.Models.Produit;
 import com.gestionParcInformatique.gestionParcInformatique.Repository.FournisseurRepository;
 import com.gestionParcInformatique.gestionParcInformatique.Repository.ProduitRepository;
@@ -21,6 +22,14 @@ public class ProduitService {
     private FileStorageService fileStorageService;
 
     private final String defaultImage = "default.jpg";
+
+    public long totalProduit() {
+        return ProduitRepository.count();
+    }
+
+    public List<Produit> findAllByCategorie(Categorie categorie) {
+        return ProduitRepository.findAllByCategorie(categorie);
+    }
 
     public List<Produit> getAllProduits() {
         return ProduitRepository.findAll();

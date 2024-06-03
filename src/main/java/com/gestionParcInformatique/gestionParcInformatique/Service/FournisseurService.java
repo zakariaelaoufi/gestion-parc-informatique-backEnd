@@ -29,10 +29,11 @@ public class FournisseurService {
     }
 
     public Fournisseur updateFournisseur(Fournisseur fournisseur,long idFournisseur) {
-        Optional<Fournisseur> Originalfournisseur = fournisseurRepository.findById(idFournisseur);
-        Originalfournisseur.get().setNomFournisseur(fournisseur.getNomFournisseur());
-        Originalfournisseur.get().setICE(fournisseur.getICE());
-        return fournisseurRepository.save(Originalfournisseur.get());
+        if (fournisseurRepository.existsById(idFournisseur)) {
+            fournisseur.setIdFournisseur(idFournisseur);
+            return fournisseurRepository.save(fournisseur);
+        }
+        return null;
     }
 
     public String deleteFournisseur(long idFournisseur) {

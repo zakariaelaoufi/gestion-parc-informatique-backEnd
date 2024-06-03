@@ -8,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/entitetravail")
@@ -29,12 +30,16 @@ public class EntiteTravailController {
 
     @PostMapping
     public ResponseEntity<EntiteTravail> addEntity(@RequestBody EntiteTravail entity) {
+        if (entity.getParent().getIdEntiteTravail()==0)
+            entity.setParent(null);
         EntiteTravail newEntity = entiteTravailService.addEntity(entity);
         return new ResponseEntity<>(newEntity, HttpStatus.CREATED);
     }
 
     @PutMapping("/{idEntiteTravail}")
     public ResponseEntity<EntiteTravail> updateEntity(@PathVariable("idEntiteTravail") long idEntiteTravail, @RequestBody EntiteTravail entity) {
+        if (entity.getParent().getIdEntiteTravail()==0)
+            entity.setParent(null);
         EntiteTravail updatedEntity = entiteTravailService.updateEntity(idEntiteTravail, entity);
         return new ResponseEntity<>(updatedEntity, HttpStatus.OK);
     }
@@ -44,4 +49,5 @@ public class EntiteTravailController {
         entiteTravailService.deleteEntity(idEntiteTravail);
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
+
 }

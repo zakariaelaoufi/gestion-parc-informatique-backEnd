@@ -12,6 +12,10 @@ import java.util.List;
 public class CategorieService {
     private final CategorieRepository categorieRepository;
 
+    public long totalCategories() {
+        return categorieRepository.count();
+    }
+
     public List<Categorie> getAllCategories() {
         return categorieRepository.findAll();
     }

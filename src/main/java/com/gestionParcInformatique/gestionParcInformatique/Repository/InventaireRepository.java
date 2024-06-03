@@ -10,4 +10,5 @@ import java.util.List;
 @Repository
 public interface InventaireRepository extends JpaRepository<Inventaire, Long> {
     public List<Inventaire> findAllByEtatIsLike(Etat etat);
+    public long count();
 }

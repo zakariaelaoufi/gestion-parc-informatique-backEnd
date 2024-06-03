@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface UtilisateurRepository extends JpaRepository<Utilisateur,Long> {
 //    public Optional<Utilisateur> findByImmatricule(String Immatricule);
+    public int countAllByDeletedIsFalse();
 }

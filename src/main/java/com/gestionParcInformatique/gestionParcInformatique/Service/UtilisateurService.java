@@ -17,6 +17,10 @@ public class UtilisateurService {
         this.utilisateurRepository = utilisateurRepository;
     }
 
+    public int getTotalUtilisateurs() {
+        return utilisateurRepository.countAllByDeletedIsFalse();
+    }
+
     public Utilisateur createUtilisateur(Utilisateur utilisateur) {
         utilisateurRepository.save(utilisateur);
         return utilisateur;

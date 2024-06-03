@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
@@ -18,7 +19,7 @@ import java.util.List;
 @NoArgsConstructor
 @Entity
 @Builder
-//@NoArgsConstructor
+@SQLDelete(sql = "UPDATE inventaire SET etat = 'REFORME' WHERE id_inventaire=?")
 public class Inventaire {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -102,5 +103,9 @@ public class Inventaire {
         return (this.affecters!=null  && !this.affecters.isEmpty()) ?
                 this.getAffecters().getFirst().getIdAffectation()
                 : -1;
+    }
+
+    public long getIdProduit() {
+        return this.getProduit().getIdProduit();
     }
 }

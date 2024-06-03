@@ -8,14 +8,16 @@ import org.hibernate.annotations.SQLDelete;
 import org.hibernate.annotations.Where;
 import org.springframework.boot.autoconfigure.web.WebProperties;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
 @SQLDelete(sql = "UPDATE entite_travail SET deleted = true WHERE id_entite_travail=?")
-@Where(clause = "deleted=false")
+//@Where(clause = "deleted=false")
 public class EntiteTravail {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

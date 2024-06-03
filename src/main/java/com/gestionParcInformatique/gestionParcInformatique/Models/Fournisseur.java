@@ -5,6 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.SQLDelete;
 
 import java.util.List;
 
@@ -15,6 +16,7 @@ import java.util.List;
 @Table(name = "Fournisseur", uniqueConstraints = {
         @UniqueConstraint(columnNames = {"ICE"})
 })
+@SQLDelete(sql = "UPDATE fournisseur SET deleted = true WHERE id_fournisseur=?")
 public class Fournisseur {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +33,7 @@ public class Fournisseur {
     private String Adresse;
     @Column(nullable = false)
     private String Email;
-
+    private boolean deleted = Boolean.FALSE;
 
     @OneToMany(mappedBy = "fournisseur")
     @JsonIgnore

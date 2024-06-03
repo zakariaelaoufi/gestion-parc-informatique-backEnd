@@ -6,4 +6,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface EntiteTravailRepository extends JpaRepository<EntiteTravail, Long> {
+    public int countAllByDeletedIsFalse();
 }

@@ -81,9 +81,8 @@ public class Produit {
         Map<String, Integer> data = new HashMap<>();
         data.put("ENSTOCK", StockDataByState(Etat.ENSTOCK));
         data.put("ACTIF", StockDataByState(Etat.ACTIF));
-        data.put("INACTIF", StockDataByState(Etat.INACTIF));
+        data.put("REFORME", StockDataByState(Etat.REFORME));
         data.put("ENREPARATION", StockDataByState(Etat.ENREPARATION));
-        data.put("MAINTENANCE", StockDataByState(Etat.MAINTENANCE));
 
         return data;
     }
@@ -92,7 +91,15 @@ public class Produit {
         return this.getMarque().getIdMarque();
     }
 
+    public String getNomMarque() {
+        return this.getMarque().getNomMarque();
+    }
+
     public long getCatrgorieID() {
         return this.getCategorie().getIdCategorie();
+    }
+
+    public String getLibelle() {
+        return this.getCategorie().getLibelle();
     }
 }
