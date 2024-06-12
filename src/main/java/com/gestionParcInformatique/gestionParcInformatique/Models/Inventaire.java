@@ -36,6 +36,12 @@ public class Inventaire {
     @JoinColumn(name = "idProduit", referencedColumnName = "idProduit")
     @JsonIgnore
     private Produit produit;
+
+    @ManyToOne
+    @JoinColumn(name = "idLivraison",referencedColumnName = "idLivraison")
+    @JsonIgnore
+    private Livraison livraison;
+
     @OneToMany(mappedBy = "inventaire")
     private List<Affecter> affecters;
     @OneToMany(mappedBy = "inventaire")
@@ -87,6 +93,17 @@ public class Inventaire {
             }
         return null;
     }
+
+    public String getAttavhementPlace() {
+        if(this.attachers!=null  && !this.attachers.isEmpty())
+            if (this.getEtat() == Etat.ENSTOCK || this.getEtat() == Etat.ENREPARATION ) {
+                return "";
+            } else {
+                return this.getAttachers().getFirst().getPlace();
+            }
+        return null;
+    }
+
     public String getAffectationPersonne() {
         if (this.affecters != null && !this.affecters.isEmpty()) {
             if (this.getEtat() == Etat.ENSTOCK || this.getEtat() == Etat.ENREPARATION ) {
@@ -107,5 +124,11 @@ public class Inventaire {
 
     public long getIdProduit() {
         return this.getProduit().getIdProduit();
+    }
+
+    public String getIce() {
+        return this.getLivraison() != null ?
+                this.getLivraison().getFournisseur().getICE()
+                : "";
     }
 }

@@ -12,6 +12,8 @@
     @NoArgsConstructor
     public class ProduitRequest {
         private Produit produit;
+        private long idProduit;
+        private Livraison livraison;
         private Fournisseur fournisseur;
         private Marque marque;
         private Categorie categorie;

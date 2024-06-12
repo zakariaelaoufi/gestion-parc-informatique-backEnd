@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.gestionParcInformatique.gestionParcInformatique.Models.*;
 import com.gestionParcInformatique.gestionParcInformatique.Service.FileStorageService;
 import com.gestionParcInformatique.gestionParcInformatique.Service.InventaireService;
+import com.gestionParcInformatique.gestionParcInformatique.Service.LivraisonService;
 import com.gestionParcInformatique.gestionParcInformatique.Service.ProduitService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
@@ -18,8 +19,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/produits")
@@ -31,6 +31,8 @@ public class ProduitController {
     private InventaireService inventaireService;
     @Autowired
     private FileStorageService fileStorageService;
+    @Autowired
+    private LivraisonService livraisonService;
     @Autowired
     private ObjectMapper jacksonObjectMapper;
 
@@ -81,16 +83,20 @@ public class ProduitController {
         ProduitRequest produitRequest = jacksonObjectMapper.readValue(data, ProduitRequest.class);
 
         Produit produit = produitRequest.getProduit();
-        produit.setFournisseur(produitRequest.getFournisseur());
         produit.setMarque( produitRequest.getMarque());
         produit.setCategorie(produitRequest.getCategorie());
-
         Produit newProduit = ProduitService.addProduit(produit,file);
+
+        Livraison livraison = produitRequest.getLivraison();
+        livraison.setFournisseur(produitRequest.getFournisseur());
+        Livraison savedLivraison = livraisonService.saveLivraison(produitRequest.getLivraison());
+
         int quantite = produitRequest.getQuantite();
         List<Inventaire> inventaires = new ArrayList<>(quantite);
         for (int i=0;i<quantite;i++) {
             inventaires.add(Inventaire.builder()
                     .produit(newProduit)
+                    .livraison(savedLivraison)
                     .etat(Etat.ENSTOCK)
                     .numeroSerie(produitRequest.getNumeroSerie().get(i))
                     .build());
@@ -99,16 +105,42 @@ public class ProduitController {
         return new ResponseEntity<>(newProduit, HttpStatus.CREATED);
     }
 
-    @PutMapping("/{idProduit}")
+    @PostMapping("/addmore")
+    public ResponseEntity<String> addMoreInventaire(@RequestBody String data) throws JsonProcessingException {
+        ProduitRequest moreInventaireRequest = jacksonObjectMapper.readValue(data, ProduitRequest.class);
+        long idProduit = moreInventaireRequest.getIdProduit();
+        Produit produit = ProduitService.getProduitById(idProduit);
+
+        Livraison livraison = moreInventaireRequest.getLivraison();
+        livraison.setFournisseur(moreInventaireRequest.getFournisseur());
+        Livraison savedLivraison = livraisonService.saveLivraison(moreInventaireRequest.getLivraison());
+
+        int quantite = moreInventaireRequest.getQuantite();
+        List<Inventaire> inventaires = new ArrayList<>(quantite);
+        for (int i=0;i<quantite;i++) {
+            inventaires.add(Inventaire.builder()
+                    .produit(produit)
+                    .livraison(savedLivraison)
+                    .etat(Etat.ENSTOCK)
+                    .numeroSerie(moreInventaireRequest.getNumeroSerie().get(i))
+                    .build());
+        }
+        List<Inventaire> savedInventaires = inventaireService.addAllInventaires(inventaires);
+        return null;
+    }
+
+        @PutMapping("/{idProduit}")
     public ResponseEntity<Produit> updateProduit(@PathVariable("idProduit") long idProduit, @RequestParam("data") String data, @RequestParam("file") MultipartFile file) throws IOException{
-        System.out.println(data);
-        System.out.println(file.getOriginalFilename());
+            System.out.println(data);
         ProduitRequest produitRequest = jacksonObjectMapper.readValue(data, ProduitRequest.class);
         Produit produit = produitRequest.getProduit();
-        produit.setFournisseur(produitRequest.getFournisseur());
-        produit.setMarque( produitRequest.getMarque());
-        produit.setCategorie(produitRequest.getCategorie());
-        Produit updatedProduit = ProduitService.updateProduit(idProduit, produit, file);
+        Produit existProduit = ProduitService.getProduitById(idProduit);
+        existProduit.setNomProduit(produit.getNomProduit());
+        existProduit.setDescription(produit.getDescription());
+        existProduit.setMarque( produitRequest.getMarque());
+        existProduit.setCategorie(produitRequest.getCategorie());
+        existProduit.setImageURL(produit.getImageURL());
+        Produit updatedProduit = ProduitService.updateProduit(idProduit, existProduit, file);
         return new ResponseEntity<>(updatedProduit, HttpStatus.OK);
     }
 

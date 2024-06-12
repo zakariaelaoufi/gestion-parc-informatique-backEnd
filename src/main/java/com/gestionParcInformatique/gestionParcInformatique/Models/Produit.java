@@ -8,10 +8,8 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Data
 @AllArgsConstructor
@@ -29,17 +27,7 @@ public class Produit {
     private String nomProduit;
     @Column(nullable = false, columnDefinition = "TEXT")
     private String description;
-    @Column(nullable = false)
-    private double prix;
-    @Column(nullable = false)
-    private LocalDate dateLivraison;
-    @Column(nullable = false)
-    private int delai;
     private String imageURL;
-
-    @ManyToOne
-    @JoinColumn(name = "idFournisseur", referencedColumnName = "idFournisseur")
-    private Fournisseur fournisseur;
 
     @ManyToOne
     @JoinColumn(name = "idMarque", referencedColumnName = "idMarque")
@@ -54,6 +42,17 @@ public class Produit {
     @OneToMany(mappedBy = "produit")
     private List<Inventaire> inventaireList;
 
+
+    public Set<Livraison> getLivraisonList() {
+        if (this.inventaireList == null) {
+            return Collections.emptySet();
+        }
+        return this.inventaireList.stream()
+                .map(Inventaire::getLivraison)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+    }
+
     public int getTotalPiece() {
         int nb = 0;
         if (this.inventaireList != null) {
@@ -62,10 +61,6 @@ public class Produit {
             }
         }
         return nb;
-    }
-
-    public LocalDate getDateExperation() {
-        return dateLivraison.plusYears(delai);
     }
 
     private int StockDataByState(Etat state) {
